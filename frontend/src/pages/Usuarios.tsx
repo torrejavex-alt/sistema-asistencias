@@ -13,6 +13,8 @@ export default function Usuarios() {
     const [instrumento, setInstrumento] = useState('');
     const [editingId, setEditingId] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     useEffect(() => {
         loadUsuarios();
@@ -32,18 +34,30 @@ export default function Usuarios() {
         if (!nombre.trim()) return;
 
         setLoading(true);
+        setError(null);
+        setSuccessMessage(null);
+
         try {
             if (editingId) {
                 await updateUsuario(editingId, { nombre, instrumento });
+                setSuccessMessage('Usuario actualizado exitosamente');
             } else {
-                await createUsuario({ nombre, instrumento });
+                const newUser = await createUsuario({ nombre, instrumento });
+                console.log('Usuario creado:', newUser);
+                setSuccessMessage('Usuario creado exitosamente');
             }
             setNombre('');
             setInstrumento('');
             setEditingId(null);
+
+            // Reload users to show the new/updated user
             await loadUsuarios();
+
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccessMessage(null), 3000);
         } catch (error) {
             console.error('Error saving user:', error);
+            setError('Error al guardar el usuario. Por favor, intenta de nuevo.');
         } finally {
             setLoading(false);
         }
@@ -86,6 +100,21 @@ export default function Usuarios() {
                         <h2 className="text-lg font-semibold text-slate-800 mb-4">
                             {editingId ? 'Editar Usuario' : 'Nuevo Usuario'}
                         </h2>
+
+                        {/* Success Message */}
+                        {successMessage && (
+                            <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm">
+                                ✓ {successMessage}
+                            </div>
+                        )}
+
+                        {/* Error Message */}
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                                ✗ {error}
+                            </div>
+                        )}
+
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
