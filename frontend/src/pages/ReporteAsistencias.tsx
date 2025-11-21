@@ -17,19 +17,6 @@ export function ReporteAsistencias() {
     const [selectedYear, setSelectedYear] = useState<string>('');
     const [availableYears, setAvailableYears] = useState<string[]>([]);
 
-    // Load data and compute available years
-    useEffect(() => {
-        fetchReportePorFecha().then(data => {
-            setFechas(data.fechas);
-            setRegistros(data.registros);
-            const years = Array.from(
-                new Set(data.fechas.map((f: string) => new Date(f).getFullYear().toString()))
-            );
-            setAvailableYears(years);
-            setSelectedYear(years[0] || '');
-        });
-    }, []);
-
     // Filter dates and records according to selected year
     const filteredFechas = selectedYear
         ? fechas.filter(f => new Date(f).getFullYear().toString() === selectedYear)
