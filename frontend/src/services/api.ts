@@ -1,8 +1,9 @@
 // src/services/api.ts
-const API_BASE_URL = '/api'; // Ahora usa el proxy de Vite
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Usuarios
 export const fetchUsuarios = () => fetch(`${API_BASE_URL}/usuarios`).then(res => res.json());
+
 export const createUsuario = (usuario: { nombre: string; instrumento?: string }) =>
     fetch(`${API_BASE_URL}/usuarios`, {
         method: 'POST',
@@ -24,6 +25,7 @@ export const deleteUsuario = (id: number) =>
 
 // Eventos
 export const fetchEventos = () => fetch(`${API_BASE_URL}/eventos`).then(res => res.json());
+
 export const createEvento = (evento: { fecha: string }) =>
     fetch(`${API_BASE_URL}/eventos`, {
         method: 'POST',
@@ -33,6 +35,7 @@ export const createEvento = (evento: { fecha: string }) =>
 
 // Asistencias
 export const fetchAsistencias = () => fetch(`${API_BASE_URL}/asistencias`).then(res => res.json());
+
 export const createAsistencia = (asistencia: { id_usuario: number; id_evento: number; id_tipo: number }) =>
     fetch(`${API_BASE_URL}/asistencias`, {
         method: 'POST',
@@ -53,5 +56,5 @@ export const deleteAsistencia = (id_usuario: number, id_evento: number) =>
     });
 
 export const fetchReportePorFecha = () =>
-    fetch('/api/asistencias/reporte-por-fecha')
+    fetch(`${API_BASE_URL}/asistencias/reporte-por-fecha`)
         .then(res => res.json());
