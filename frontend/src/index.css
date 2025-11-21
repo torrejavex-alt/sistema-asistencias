@@ -1,0 +1,268 @@
+@import "tailwindcss";
+
+@layer base {
+    :root {
+        /* Matte Color Palette - Sophisticated & Elegant */
+        --color-bg-primary: #F5F3F0;
+        --color-bg-card: #FEFEFE;
+        --color-bg-elevated: #FFFFFF;
+
+        /* Slate/Pizarra - Primary accents */
+        --color-slate-600: #475569;
+        --color-slate-500: #64748B;
+        --color-slate-400: #94A3B8;
+        --color-slate-300: #CBD5E1;
+        --color-slate-200: #E2E8F0;
+        --color-slate-100: #F1F5F9;
+
+        /* Terracotta Matte - Secondary accent */
+        --color-terracotta-600: #B87A6E;
+        --color-sage-100: #F2F6F0;
+
+        /* Status Colors - Matte */
+        --color-status-attended: #7C9A7E;
+        --color-status-attended-bg: #E4EBE0;
+        --color-status-absent: #B87A6E;
+        --color-status-absent-bg: #F0E8DC;
+        --color-status-permission: #D4A574;
+        --color-status-permission-bg: #F5EBD8;
+        --color-status-not-summoned: #A8A8A8;
+        --color-status-not-summoned-bg: #E8E8E8;
+
+        /* Text Colors */
+        --color-text-primary: #2D3748;
+        --color-text-secondary: #4A5568;
+        --color-text-tertiary: #718096;
+
+        /* Shadows - Soft & Diffused */
+        --shadow-sm: 0 1px 3px 0 rgba(71, 85, 105, 0.08);
+        --shadow-md: 0 4px 12px 0 rgba(71, 85, 105, 0.1);
+        --shadow-lg: 0 10px 25px 0 rgba(71, 85, 105, 0.12);
+        --shadow-xl: 0 20px 40px 0 rgba(71, 85, 105, 0.15);
+
+        /* Border Radius - Bento Style */
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --radius-xl: 18px;
+    }
+
+    body {
+        background-color: var(--color-bg-primary);
+        color: var(--color-text-primary);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    * {
+        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+}
+
+@layer components {
+
+    /* Bento Card Styles */
+    .bento-card {
+        background-color: var(--color-bg-card);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .bento-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+    }
+
+    /* Button Styles - Matte */
+    .btn-primary {
+        background-color: var(--color-slate-600);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--color-slate-500);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background-color: var(--color-terracotta-500);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--color-terracotta-600);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+    }
+
+    /* Status Badges - Matte */
+    .badge-attended {
+        background-color: var(--color-status-attended-bg);
+        color: var(--color-status-attended);
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-absent {
+        background-color: var(--color-status-absent-bg);
+        color: var(--color-status-absent);
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-permission {
+        background-color: var(--color-status-permission-bg);
+        color: var(--color-status-permission);
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-not-summoned {
+        background-color: var(--color-status-not-summoned-bg);
+        color: var(--color-status-not-summoned);
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* Table Styles - Bento with Increased Spacing */
+    .bento-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .bento-table th {
+        background: linear-gradient(to bottom, var(--color-slate-100), var(--color-slate-200));
+        color: var(--color-slate-600);
+        font-weight: 600;
+        text-align: left;
+        padding: 1.25rem 2rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 2px solid var(--color-slate-300);
+    }
+
+    .bento-table td {
+        padding: 1.25rem 2rem;
+        border-bottom: 1px solid var(--color-slate-200);
+        color: var(--color-text-secondary);
+    }
+
+    .bento-table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    .bento-table tbody tr:hover {
+        background-color: var(--color-slate-100);
+    }
+
+    /* Input Styles */
+    .bento-input {
+        background-color: var(--color-bg-elevated);
+        border: 1px solid var(--color-slate-300);
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1rem;
+        color: var(--color-text-primary);
+        transition: all 0.2s ease;
+    }
+
+    .bento-input:focus {
+        outline: none;
+        border-color: var(--color-slate-500);
+        box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.1);
+    }
+}
+
+@layer utilities {
+
+    /* Custom Calendar Styles */
+    .react-calendar {
+        border: none !important;
+        border-radius: var(--radius-lg) !important;
+        background-color: transparent !important;
+        font-family: inherit !important;
+        width: 100% !important;
+    }
+
+    .react-calendar__tile {
+        border-radius: var(--radius-sm) !important;
+        padding: 0.75rem !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .react-calendar__tile:hover {
+        background-color: var(--color-sage-200) !important;
+    }
+
+    .react-calendar__tile--active {
+        background-color: var(--color-slate-600) !important;
+        color: white !important;
+    }
+
+    .react-calendar__tile--active:hover {
+        background-color: var(--color-slate-500) !important;
+    }
+
+    .react-calendar__tile--now {
+        background-color: var(--color-terracotta-200) !important;
+    }
+
+    .react-calendar__navigation button {
+        border-radius: var(--radius-md) !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .react-calendar__navigation button:hover {
+        background-color: var(--color-slate-200) !important;
+    }
+
+    .react-calendar__month-view__weekdays {
+        color: var(--color-text-tertiary) !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+    }
+
+    /* Scrollbar Styles */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--color-slate-100);
+        border-radius: var(--radius-sm);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--color-slate-400);
+        border-radius: var(--radius-sm);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-slate-500);
+    }
+}
