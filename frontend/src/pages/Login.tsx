@@ -11,42 +11,44 @@ export default function Login() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("1. Iniciando submit...");
         setError(null);
         setLoading(true);
 
         try {
+            console.log("2. Llamando a API login con:", username);
             const data = await login(username, password);
+            console.log("3. Respuesta recibida:", data);
+
+            if (!data.access_token) {
+                throw new Error("No se recibió token del servidor");
+            }
 
             // Guardar token y datos del usuario
+            console.log("4. Guardando en localStorage...");
             localStorage.setItem('access_token', data.access_token);
             localStorage.setItem('user', JSON.stringify({
                 username: data.username,
                 nombre_completo: data.nombre_completo
             }));
 
+            console.log("5. Redirigiendo...");
             // Redirigir al dashboard
             navigate('/');
         } catch (err: any) {
-            console.error('Error al iniciar sesión:', err);
-            let errorMessage = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
+            console.error('ERROR EN LOGIN:', err);
+            let errorMessage = 'Error desconocido';
 
             if (err.response) {
-                // El servidor respondió con un estado de error
-                if (err.response.data && err.response.data.error) {
-                    errorMessage = err.response.data.error;
-                } else if (err.response.status === 401) {
-                    errorMessage = 'Usuario o contraseña incorrectos';
-                } else if (err.response.status === 500) {
-                    errorMessage = 'Error interno del servidor. Por favor, contacta al soporte.';
-                }
+                errorMessage = `Error del servidor: ${err.response.status} - ${JSON.stringify(err.response.data)}`;
             } else if (err.request) {
-                // La petición se hizo pero no hubo respuesta
-                errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión a internet.';
+                errorMessage = 'No hubo respuesta del servidor (posible error de red/CORS)';
+            } else {
+                errorMessage = err.message;
             }
 
             setError(errorMessage);
-            // Mostrar pop-up como solicitaste
-            window.alert(errorMessage);
+            window.alert("FALLÓ EL LOGIN:\n" + errorMessage);
         } finally {
             setLoading(false);
         }
