@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { verifyToken } from '../services/api';
 
@@ -8,7 +8,8 @@ interface PrivateRouteProps {
 
 export default function PrivateRoute({ children }: PrivateRouteProps) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [isVerifying, setIsVerifying] = useState(true);
+    const location = useLocation();
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -16,7 +17,7 @@ export default function PrivateRoute({ children }: PrivateRouteProps) {
 
             if (!token) {
                 setIsAuthenticated(false);
-                setLoading(false);
+                setIsVerifying(false);
                 return;
             }
 
@@ -24,19 +25,19 @@ export default function PrivateRoute({ children }: PrivateRouteProps) {
                 await verifyToken();
                 setIsAuthenticated(true);
             } catch (error) {
-                console.error('Token inválido:', error);
+                console.error('Token inválido o expirado:', error);
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('user');
                 setIsAuthenticated(false);
             } finally {
-                setLoading(false);
+                setIsVerifying(false);
             }
         };
 
         checkAuth();
-    }, []);
+    }, [location.pathname]); // Verificar autenticación cada vez que cambia la ruta
 
-    if (loading) {
+    if (isVerifying) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-sage-50 to-terracotta-50">
                 <div className="text-center">
@@ -46,14 +47,15 @@ export default function PrivateRoute({ children }: PrivateRouteProps) {
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                     </div>
-                    <p className="text-slate-600 font-medium">Verificando autenticación...</p>
+                    <p className="text-slate-600 font-medium">Verificando sesión...</p>
                 </div>
             </div>
         );
     }
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        // Redirigir al login y guardar la ubicación intentada
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     return <>{children}</>;
