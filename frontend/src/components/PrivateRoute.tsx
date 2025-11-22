@@ -24,8 +24,15 @@ export default function PrivateRoute({ children }: PrivateRouteProps) {
             try {
                 await verifyToken();
                 setIsAuthenticated(true);
-            } catch (error) {
-                console.error('Token inválido o expirado:', error);
+            } catch (error: any) {
+                console.error('Token inválido:', error);
+
+                // DIAGNÓSTICO: Mostrar por qué falló
+                if (error.response && error.response.status === 422) {
+                    const serverError = JSON.stringify(error.response.data, null, 2);
+                    alert(`ERROR DE TOKEN (422):\n${serverError}`);
+                }
+
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('user');
                 setIsAuthenticated(false);
