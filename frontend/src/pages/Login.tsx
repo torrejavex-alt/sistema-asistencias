@@ -28,11 +28,25 @@ export default function Login() {
             navigate('/');
         } catch (err: any) {
             console.error('Error al iniciar sesión:', err);
-            if (err.response && err.response.data && err.response.data.error) {
-                setError(err.response.data.error);
-            } else {
-                setError('Error al iniciar sesión. Por favor, intenta de nuevo.');
+            let errorMessage = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
+
+            if (err.response) {
+                // El servidor respondió con un estado de error
+                if (err.response.data && err.response.data.error) {
+                    errorMessage = err.response.data.error;
+                } else if (err.response.status === 401) {
+                    errorMessage = 'Usuario o contraseña incorrectos';
+                } else if (err.response.status === 500) {
+                    errorMessage = 'Error interno del servidor. Por favor, contacta al soporte.';
+                }
+            } else if (err.request) {
+                // La petición se hizo pero no hubo respuesta
+                errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión a internet.';
             }
+
+            setError(errorMessage);
+            // Mostrar pop-up como solicitaste
+            window.alert(errorMessage);
         } finally {
             setLoading(false);
         }
