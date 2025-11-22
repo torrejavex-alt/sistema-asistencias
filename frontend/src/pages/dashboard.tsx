@@ -71,31 +71,40 @@ export default function Dashboard() {
     }, [currentEventId, asistencias]);
 
     const handleAttendanceChange = async (userId: number, tipoId: number) => {
-        let eventId = currentEventId;
+        try {
+            let eventId = currentEventId;
 
-        // If no event exists for this date, create it
-        if (!eventId) {
-            const dateStr = format(selectedDate, 'yyyy-MM-dd');
-            const newEvent = await createEvento({ fecha: dateStr });
-            eventId = newEvent.id_evento;
-            await loadData(); // Reload to get the new event
+            // If no event exists for this date, create it
+            if (!eventId) {
+                const dateStr = format(selectedDate, 'yyyy-MM-dd');
+                const newEvent = await createEvento({ fecha: dateStr });
+                eventId = newEvent.id_evento;
+                await loadData(); // Reload to get the new event
+            }
+
+            const existingAttendance = getAttendanceForUser(userId);
+
+            if (existingAttendance !== null) {
+                // Update existing
+                await updateAsistencia(userId, eventId!, tipoId);
+            } else {
+                // Create new
+                await createAsistencia({
+                    id_usuario: userId,
+                    id_evento: eventId!,
+                    id_tipo: tipoId
+                });
+            }
+
+            await loadData(); // Reload data
+        } catch (error: any) {
+            console.error('Error updating attendance:', error);
+            if (error.response && error.response.data && error.response.data.error) {
+                alert(error.response.data.error);
+            } else {
+                alert('Error al actualizar la asistencia. Por favor, intenta de nuevo.');
+            }
         }
-
-        const existingAttendance = getAttendanceForUser(userId);
-
-        if (existingAttendance !== null) {
-            // Update existing
-            await updateAsistencia(userId, eventId!, tipoId);
-        } else {
-            // Create new
-            await createAsistencia({
-                id_usuario: userId,
-                id_evento: eventId!,
-                id_tipo: tipoId
-            });
-        }
-
-        await loadData(); // Reload data
     };
 
     const handleDeleteAttendance = async (userId: number) => {

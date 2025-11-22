@@ -1,80 +1,109 @@
-// src/services/api.ts
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+const api = axios.create({
+    baseURL: API_URL,
+});
+
+// Interceptor para agregar el token JWT a todas las peticiones
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Interceptor para manejar errores de autenticación
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            // Token inválido o expirado
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
+
+// Auth
+export const login = async (username: string, password: string) => {
+    const response = await api.post('/auth/login', { username, password });
+    return response.data;
+};
+
+export const verifyToken = async () => {
+    const response = await api.get('/auth/verify');
+    return response.data;
+};
+
+export const logout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+};
 
 // Usuarios
 export const fetchUsuarios = async () => {
-    const response = await fetch(`${API_BASE_URL}/usuarios`);
-    if (!response.ok) {
-        throw new Error(`Error fetching usuarios: ${response.statusText}`);
-    }
-    return response.json();
+    const response = await api.get('/usuarios');
+    return response.data;
 };
 
-export const createUsuario = async (usuario: { nombre: string; instrumento?: string }) => {
-    const response = await fetch(`${API_BASE_URL}/usuarios`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(usuario)
-    });
-    if (!response.ok) {
-        throw new Error(`Error creating usuario: ${response.statusText}`);
-    }
-    return response.json();
+export const createUsuario = async (data: { nombre: string; instrumento?: string }) => {
+    const response = await api.post('/usuarios', data);
+    return response.data;
 };
 
-export const updateUsuario = async (id: number, usuario: { nombre: string; instrumento?: string }) => {
-    const response = await fetch(`${API_BASE_URL}/usuarios/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(usuario)
-    });
-    if (!response.ok) {
-        throw new Error(`Error updating usuario: ${response.statusText}`);
-    }
-    return response.json();
+export const updateUsuario = async (id: number, data: { nombre: string; instrumento?: string }) => {
+    const response = await api.put(`/usuarios/${id}`, data);
+    return response.data;
 };
 
 export const deleteUsuario = async (id: number) => {
-    const response = await fetch(`${API_BASE_URL}/usuarios/${id}`, {
-        method: 'DELETE'
-    });
-    if (!response.ok) {
-        throw new Error(`Error deleting usuario: ${response.statusText}`);
-    }
+    const response = await api.delete(`/usuarios/${id}`);
+    return response.data;
 };
 
 // Eventos
-export const fetchEventos = () => fetch(`${API_BASE_URL}/eventos`).then(res => res.json());
+export const fetchEventos = async () => {
+    const response = await api.get('/eventos');
+    return response.data;
+};
 
-export const createEvento = (evento: { fecha: string }) =>
-    fetch(`${API_BASE_URL}/eventos`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(evento)
-    }).then(res => res.json());
+export const createEvento = async (data: { fecha: string }) => {
+    const response = await api.post('/eventos', data);
+    return response.data;
+};
 
 // Asistencias
-export const fetchAsistencias = () => fetch(`${API_BASE_URL}/asistencias`).then(res => res.json());
+export const fetchAsistencias = async () => {
+    const response = await api.get('/asistencias');
+    return response.data;
+};
 
-export const createAsistencia = (asistencia: { id_usuario: number; id_evento: number; id_tipo: number }) =>
-    fetch(`${API_BASE_URL}/asistencias`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(asistencia)
-    }).then(res => res.json());
+export const createAsistencia = async (data: { id_usuario: number; id_evento: number; id_tipo: number }) => {
+    const response = await api.post('/asistencias', data);
+    return response.data;
+};
 
-export const updateAsistencia = (id_usuario: number, id_evento: number, id_tipo: number) =>
-    fetch(`${API_BASE_URL}/asistencias/${id_usuario}/${id_evento}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_tipo })
-    }).then(res => res.json());
+export const updateAsistencia = async (userId: number, eventId: number, tipoId: number) => {
+    const response = await api.put(`/asistencias/${userId}/${eventId}`, { id_tipo: tipoId });
+    return response.data;
+};
 
-export const deleteAsistencia = (id_usuario: number, id_evento: number) =>
-    fetch(`${API_BASE_URL}/asistencias/${id_usuario}/${id_evento}`, {
-        method: 'DELETE'
-    });
+export const deleteAsistencia = async (userId: number, eventId: number) => {
+    const response = await api.delete(`/asistencias/${userId}/${eventId}`);
+    return response.data;
+};
 
-export const fetchReportePorFecha = () =>
-    fetch(`${API_BASE_URL}/asistencias/reporte-por-fecha`)
-        .then(res => res.json());
+export const fetchReportePorFecha = async () => {
+    const response = await api.get('/asistencias/reporte-por-fecha');
+    return response.data;
+};

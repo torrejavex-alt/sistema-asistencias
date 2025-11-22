@@ -55,9 +55,14 @@ export default function Usuarios() {
 
             // Clear success message after 3 seconds
             setTimeout(() => setSuccessMessage(null), 3000);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving user:', error);
-            setError('Error al guardar el usuario. Por favor, intenta de nuevo.');
+            // Mostrar el mensaje de error específico del servidor si está disponible
+            if (error.response && error.response.data && error.response.data.error) {
+                setError(error.response.data.error);
+            } else {
+                setError('Error al guardar el usuario. Por favor, intenta de nuevo.');
+            }
         } finally {
             setLoading(false);
         }

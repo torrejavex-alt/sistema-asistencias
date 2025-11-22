@@ -27,18 +27,32 @@ def get_asistencias():
 @asistencias_bp.route('', methods=['POST'])
 def create_asistencia():
     data = request.get_json()
+    
+    # Verificar si ya existe un registro para este usuario en este evento
+    asistencia_existente = Asistencia.query.filter_by(
+        id_usuario=data['id_usuario'],
+        id_evento=data['id_evento']
+    ).first()
+    
+    if asistencia_existente:
+        return jsonify({'error': 'Ya existe un registro de asistencia para este usuario en esta fecha'}), 400
+    
     nueva = Asistencia(
         id_usuario=data['id_usuario'],
         id_evento=data['id_evento'],
         id_tipo=data['id_tipo']
     )
-    db.session.add(nueva)
-    db.session.commit()
-    return jsonify({
-        'id_usuario': nueva.id_usuario,
-        'id_evento': nueva.id_evento,
-        'id_tipo': nueva.id_tipo
-    }), 201
+    try:
+        db.session.add(nueva)
+        db.session.commit()
+        return jsonify({
+            'id_usuario': nueva.id_usuario,
+            'id_evento': nueva.id_evento,
+            'id_tipo': nueva.id_tipo
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al crear el registro de asistencia'}), 500
 
 # PUT /api/asistencias/<int:id_usuario>/<int:id_evento>
 @asistencias_bp.route('/<int:id_usuario>/<int:id_evento>', methods=['PUT'])
@@ -46,12 +60,16 @@ def update_asistencia(id_usuario, id_evento):
     asistencia = Asistencia.query.get_or_404((id_usuario, id_evento))
     data = request.get_json()
     asistencia.id_tipo = data['id_tipo']
-    db.session.commit()
-    return jsonify({
-        'id_usuario': asistencia.id_usuario,
-        'id_evento': asistencia.id_evento,
-        'id_tipo': asistencia.id_tipo
-    })
+    try:
+        db.session.commit()
+        return jsonify({
+            'id_usuario': asistencia.id_usuario,
+            'id_evento': asistencia.id_evento,
+            'id_tipo': asistencia.id_tipo
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al actualizar el registro de asistencia'}), 500
 
 # DELETE /api/asistencias/<int:id_usuario>/<int:id_evento>
 @asistencias_bp.route('/<int:id_usuario>/<int:id_evento>', methods=['DELETE'])

@@ -1,32 +1,38 @@
 # app.py
 from flask import Flask
 from flask_cors import CORS
-from extensions import db  # ← Importa db desde extensions
+from flask_jwt_extended import JWTManager
+from extensions import db
 from config import Config
+import os
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    
+    # Configuración JWT
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'tu-clave-secreta-super-segura-cambiar-en-produccion')
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 28800  # 8 horas
+    
     CORS(app)
+    jwt = JWTManager(app)
 
     # Inicializa la base de datos con la app
     db.init_app(app)
 
     # Registra blueprints
-    # Dentro de create_app()
     from routes.usuarios import usuarios_bp
     from routes.eventos import eventos_bp
     from routes.asistencias import asistencias_bp
+    from routes.auth import auth_bp
 
     app.register_blueprint(usuarios_bp, url_prefix='/api/usuarios')
     app.register_blueprint(eventos_bp, url_prefix='/api/eventos')
     app.register_blueprint(asistencias_bp, url_prefix='/api/asistencias')
+    app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
     return app
 
 if __name__ == '__main__':
     app = create_app()
     app.run(debug=True)
-
-
-    

@@ -1,11 +1,26 @@
-import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { logout } from '../services/api';
 
 export default function Navbar() {
     const location = useLocation();
+    const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [user, setUser] = useState<{ username: string; nombre_completo?: string } | null>(null);
+
+    useEffect(() => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            setUser(JSON.parse(userData));
+        }
+    }, []);
 
     const isActive = (path: string) => location.pathname === path;
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     const navLinks = [
         { path: '/', label: 'Dashboard' },
@@ -32,13 +47,34 @@ export default function Navbar() {
                                     key={link.path}
                                     to={link.path}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive(link.path)
-                                            ? 'bg-slate-600 text-white shadow-md'
-                                            : 'text-slate-600 hover:bg-slate-100'
+                                        ? 'bg-slate-600 text-white shadow-md'
+                                        : 'text-slate-600 hover:bg-slate-100'
                                         }`}
                                 >
                                     {link.label}
                                 </Link>
                             ))}
+                        </div>
+
+                        {/* User Info & Logout (Desktop) */}
+                        <div className="hidden sm:flex items-center gap-3">
+                            {user && (
+                                <div className="text-sm text-slate-600">
+                                    <span className="font-medium">{user.nombre_completo || user.username}</span>
+                                </div>
+                            )}
+                            <button
+                                onClick={handleLogout}
+                                className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                title="Cerrar sesión"
+                            >
+                                <span className="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    <span className="hidden md:inline">Salir</span>
+                                </span>
+                            </button>
                         </div>
 
                         {/* Mobile menu button */}
@@ -68,19 +104,34 @@ export default function Navbar() {
             {/* Mobile menu */}
             <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
                 <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-slate-200">
+                    {/* User info (Mobile) */}
+                    {user && (
+                        <div className="px-3 py-2 text-sm text-slate-600 border-b border-slate-200 mb-2">
+                            <span className="font-medium">{user.nombre_completo || user.username}</span>
+                        </div>
+                    )}
+
                     {navLinks.map(link => (
                         <Link
                             key={link.path}
                             to={link.path}
                             onClick={() => setIsMenuOpen(false)}
                             className={`block px-3 py-2 rounded-md text-base font-medium transition-all ${isActive(link.path)
-                                    ? 'bg-slate-600 text-white shadow-md'
-                                    : 'text-slate-600 hover:bg-slate-100'
+                                ? 'bg-slate-600 text-white shadow-md'
+                                : 'text-slate-600 hover:bg-slate-100'
                                 }`}
                         >
                             {link.label}
                         </Link>
                     ))}
+
+                    {/* Logout button (Mobile) */}
+                    <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50 transition-all"
+                    >
+                        Cerrar Sesión
+                    </button>
                 </div>
             </div>
         </nav>
