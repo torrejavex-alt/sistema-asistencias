@@ -17,6 +17,18 @@ def create_app():
     CORS(app)
     jwt = JWTManager(app)
 
+    @jwt.invalid_token_loader
+    def invalid_token_callback(error):
+        return {"error": "Token inválido", "details": error}, 422
+
+    @jwt.unauthorized_loader
+    def missing_token_callback(error):
+        return {"error": "Falta el token de autorización", "details": error}, 401
+
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        return {"error": "El token ha expirado", "details": "token_expired"}, 401
+
     # Inicializa la base de datos y bcrypt con la app
     db.init_app(app)
     bcrypt.init_app(app)
