@@ -4,7 +4,7 @@ Script para crear la tabla de administradores y el primer usuario admin
 
 import os
 from sqlalchemy import create_engine, text
-from flask_bcrypt import Bcrypt
+import bcrypt as bcrypt_lib
 from dotenv import load_dotenv
 
 # Cargar variables de entorno
@@ -19,7 +19,6 @@ if not DATABASE_URL:
 
 # Crear conexión a la base de datos
 engine = create_engine(DATABASE_URL)
-bcrypt = Bcrypt()
 
 def crear_tabla_admin():
     """Crea la tabla admin si no existe"""
@@ -81,7 +80,7 @@ def crear_admin_inicial():
                 return
             
             # Cifrar contraseña
-            password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+            password_hash = bcrypt_lib.hashpw(password.encode('utf-8'), bcrypt_lib.gensalt()).decode('utf-8')
             
             # Insertar nuevo admin
             conn.execute(text("""

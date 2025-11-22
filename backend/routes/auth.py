@@ -1,12 +1,10 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from flask_bcrypt import Bcrypt
+from extensions import db, bcrypt
 from models import Admin
-from extensions import db
 from datetime import timedelta
 
 auth_bp = Blueprint('auth', __name__)
-bcrypt = Bcrypt()
 
 # POST /api/auth/login
 @auth_bp.route('/login', methods=['POST'])

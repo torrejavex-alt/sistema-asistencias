@@ -2,7 +2,7 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from extensions import db
+from extensions import db, bcrypt
 from config import Config
 import os
 
@@ -17,8 +17,9 @@ def create_app():
     CORS(app)
     jwt = JWTManager(app)
 
-    # Inicializa la base de datos con la app
+    # Inicializa la base de datos y bcrypt con la app
     db.init_app(app)
+    bcrypt.init_app(app)
 
     # Registra blueprints
     from routes.usuarios import usuarios_bp
