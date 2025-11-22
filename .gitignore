@@ -1,6 +1,8 @@
 # General
 .DS_Store
 .env
+backend/.env
+
 
 # Python / Backend
 backend/__pycache__/

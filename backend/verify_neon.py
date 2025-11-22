@@ -3,8 +3,17 @@ Script para verificar las tablas en Neon
 """
 import os
 import psycopg2
+from dotenv import load_dotenv
 
-neon_url = "postgresql://neondb_owner:npg_mULy0K5sORZX@ep-damp-sunset-ah0baza5-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+load_dotenv()
+
+# Obtener URL de variable de entorno
+neon_url = os.getenv('DATABASE_URL')
+
+if not neon_url:
+    print("❌ Error: DATABASE_URL no encontrada en variables de entorno")
+    print("Asegúrate de tener un archivo .env con DATABASE_URL definida")
+    exit(1)
 
 try:
     print("🔄 Conectando a Neon PostgreSQL...")
