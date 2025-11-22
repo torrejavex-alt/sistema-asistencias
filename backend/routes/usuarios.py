@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import Usuario
+from models import Usuario, Asistencia
 from extensions import db
 
 usuarios_bp = Blueprint('usuarios', __name__)
@@ -69,6 +69,15 @@ def update_usuario(id):
 @usuarios_bp.route('/<int:id>', methods=['DELETE'])
 def delete_usuario(id):
     usuario = Usuario.query.get_or_404(id)
-    db.session.delete(usuario)
-    db.session.commit()
-    return '', 204
+    
+    try:
+        # Eliminar todas las asistencias asociadas a este usuario primero
+        Asistencia.query.filter_by(id_usuario=id).delete()
+        
+        # Ahora sí eliminar al usuario
+        db.session.delete(usuario)
+        db.session.commit()
+        return '', 204
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al eliminar el usuario'}), 500
