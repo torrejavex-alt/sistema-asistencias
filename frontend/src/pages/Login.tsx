@@ -93,6 +93,8 @@ export default function Login() {
                                 placeholder="Ingresa tu usuario"
                                 required
                                 autoFocus
+                                autoComplete="off"
+                                spellCheck="false"
                             />
                         </div>
 
@@ -106,8 +108,10 @@ export default function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="bento-input w-full"
-                                placeholder="Ingresa tu contraseña"
+                                placeholder="••••••••"
                                 required
+                                autoComplete="new-password"
+                                spellCheck="false"
                             />
                         </div>
 
