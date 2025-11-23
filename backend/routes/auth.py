@@ -27,27 +27,35 @@ def login():
         return jsonify({'error': 'Credenciales inválidas'}), 401
     
     # Crear token JWT
-    access_token = create_access_token(
-        identity=admin.id_admin,
-        additional_claims={
+    try:
+        access_token = create_access_token(
+            identity=str(admin.id_admin),
+            additional_claims={
+                'username': admin.username,
+                'nombre_completo': admin.nombre_completo
+            },
+            expires_delta=timedelta(hours=8)
+        )
+        
+        return jsonify({
+            'access_token': access_token,
             'username': admin.username,
             'nombre_completo': admin.nombre_completo
-        },
-        expires_delta=timedelta(hours=8)
-    )
-    
-    return jsonify({
-        'access_token': access_token,
-        'username': admin.username,
-        'nombre_completo': admin.nombre_completo
-    }), 200
+        }), 200
+    except Exception as e:
+        print(f"Error creating token: {e}")
+        return jsonify({'error': f'Error al crear el token: {str(e)}'}), 500
 
 # GET /api/auth/verify - Verificar si el token es válido
 @auth_bp.route('/verify', methods=['GET'])
 @jwt_required()
 def verify():
     current_admin_id = get_jwt_identity()
-    admin = Admin.query.get(current_admin_id)
+    try:
+        admin_id = int(current_admin_id)
+        admin = Admin.query.get(admin_id)
+    except (ValueError, TypeError):
+        return jsonify({'error': 'Token inválido'}), 422
     
     if not admin:
         return jsonify({'error': 'Usuario no encontrado'}), 404
