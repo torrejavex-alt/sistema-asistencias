@@ -199,23 +199,34 @@ export default function Usuarios() {
                 {/* List Section */}
                 <div className="lg:col-span-8">
                     <div className="bento-card">
-                        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-4">
                                 <h2 className="text-lg font-semibold text-slate-800">Lista de Miembros</h2>
                                 <span className="text-sm text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
                                     {usuarios.length} usuarios
                                 </span>
                             </div>
-                            <button
-                                onClick={handleDeleteAllAsistencias}
-                                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 shadow-sm transition-all hover:shadow-md"
-                                title="Eliminar todos los registros de asistencia"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                Eliminar Todas las Asistencias
-                            </button>
+                        </div>
+
+                        {/* Gestión Global de Asistencias */}
+                        <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                            <div className="flex items-center justify-between flex-wrap gap-4">
+                                <div>
+                                    <h3 className="text-sm font-semibold text-orange-900 mb-1">Gestión Global de Asistencias</h3>
+                                    <p className="text-xs text-orange-700">Elimina todos los registros de asistencia de todos los usuarios (no elimina usuarios)</p>
+                                </div>
+                                <button
+                                    onClick={handleDeleteAllAsistencias}
+                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 shadow-sm transition-all hover:shadow-md"
+                                    title="Eliminar todos los registros de asistencia de todos los usuarios"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Eliminar Todas las Asistencias
+                                </button>
+                            </div>
                         </div>
 
                         <div className="overflow-x-auto -mx-6 px-6">
@@ -224,7 +235,8 @@ export default function Usuarios() {
                                     <tr>
                                         <th>Nombre</th>
                                         <th>Instrumento</th>
-                                        <th className="text-right">Acciones</th>
+                                        <th className="text-center">Gestión de Asistencias</th>
+                                        <th className="text-center">Gestión de Usuario</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -237,26 +249,30 @@ export default function Usuarios() {
                                             </td>
                                             <td>{user.instrumento || '-'}</td>
                                             <td>
-                                                <div className="flex justify-end gap-2">
+                                                <div className="flex justify-center gap-2">
+                                                    <button
+                                                        onClick={() => handleDeleteUserAsistencias(user.id_usuario, user.nombre)}
+                                                        className="flex items-center gap-1 px-3 py-1.5 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors text-sm font-medium border border-orange-200"
+                                                        title="Eliminar todos los registros de asistencia de este usuario (no elimina el usuario)"
+                                                    >
+                                                        <span>📋</span>
+                                                        <span className="hidden sm:inline">Limpiar</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="flex justify-center gap-2">
                                                     <button
                                                         onClick={() => handleEdit(user)}
-                                                        className="flex items-center gap-1 px-3 py-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors text-sm font-medium"
+                                                        className="flex items-center gap-1 px-3 py-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors text-sm font-medium border border-indigo-200"
                                                         title="Editar información del usuario"
                                                     >
                                                         <span>✏️</span>
                                                         <span className="hidden sm:inline">Editar</span>
                                                     </button>
                                                     <button
-                                                        onClick={() => handleDeleteUserAsistencias(user.id_usuario, user.nombre)}
-                                                        className="flex items-center gap-1 px-3 py-1.5 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors text-sm font-medium"
-                                                        title="Eliminar todos los registros de asistencia de este usuario (no elimina el usuario)"
-                                                    >
-                                                        <span>📋</span>
-                                                        <span className="hidden sm:inline">Limpiar Asistencias</span>
-                                                    </button>
-                                                    <button
                                                         onClick={() => handleDelete(user.id_usuario)}
-                                                        className="flex items-center gap-1 px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium"
+                                                        className="flex items-center gap-1 px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium border border-red-200"
                                                         title="Eliminar usuario permanentemente"
                                                     >
                                                         <span>🗑️</span>
