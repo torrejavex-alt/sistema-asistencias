@@ -240,24 +240,27 @@ export default function Usuarios() {
                                                 <div className="flex justify-end gap-2">
                                                     <button
                                                         onClick={() => handleEdit(user)}
-                                                        className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                                                        title="Editar"
+                                                        className="flex items-center gap-1 px-3 py-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors text-sm font-medium"
+                                                        title="Editar información del usuario"
                                                     >
-                                                        ✏️
+                                                        <span>✏️</span>
+                                                        <span className="hidden sm:inline">Editar</span>
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteUserAsistencias(user.id_usuario, user.nombre)}
-                                                        className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                                                        title="Eliminar asistencias de este usuario"
+                                                        className="flex items-center gap-1 px-3 py-1.5 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors text-sm font-medium"
+                                                        title="Eliminar todos los registros de asistencia de este usuario (no elimina el usuario)"
                                                     >
-                                                        📋🗑️
+                                                        <span>📋</span>
+                                                        <span className="hidden sm:inline">Limpiar Asistencias</span>
                                                     </button>
                                                     <button
                                                         onClick={() => handleDelete(user.id_usuario)}
-                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                        title="Eliminar usuario"
+                                                        className="flex items-center gap-1 px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium"
+                                                        title="Eliminar usuario permanentemente"
                                                     >
-                                                        🗑️
+                                                        <span>🗑️</span>
+                                                        <span className="hidden sm:inline">Eliminar</span>
                                                     </button>
                                                 </div>
                                             </td>
