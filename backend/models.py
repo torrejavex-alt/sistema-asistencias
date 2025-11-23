@@ -5,7 +5,8 @@ class Usuario(db.Model):
     __tablename__ = 'usuario'
     id_usuario = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False, unique=True)
-    instrumento = db.Column(db.String(100))
+    email = db.Column(db.String(120))
+    telefono = db.Column(db.String(30))
 
 class Evento(db.Model):
     __tablename__ = 'evento'

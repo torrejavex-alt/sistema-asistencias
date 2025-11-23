@@ -81,3 +81,42 @@ def delete_usuario(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Error al eliminar el usuario'}), 500
+
+# POST /api/usuarios/import (CSV bulk upload)
+@usuarios_bp.route('/import', methods=['POST'])
+def import_usuarios():
+    """Import users from a CSV file.
+    Expected columns: nombre,instrumento,email,telefono (email and telefono optional).
+    """
+    if 'file' not in request.files:
+        return jsonify({'error': 'Archivo no enviado'}), 400
+    file = request.files['file']
+    # Decode as UTF-8 and read lines
+    stream = file.stream.read().decode('utf-8').splitlines()
+    import csv
+    reader = csv.DictReader(stream)
+    creados = 0
+    errores = []
+    for idx, row in enumerate(reader, start=2):  # start=2 accounting header line
+        nombre = row.get('nombre')
+        if not nombre:
+            errores.append(f'Línea {idx}: nombre vacío')
+            continue
+        # Verificar duplicado
+        if Usuario.query.filter_by(nombre=nombre).first():
+            errores.append(f'Línea {idx}: usuario "{nombre}" ya existe')
+            continue
+        nuevo = Usuario(
+            nombre=nombre,
+            instrumento=row.get('instrumento') or None,
+            email=row.get('email') or None,
+            telefono=row.get('telefono') or None,
+        )
+        db.session.add(nuevo)
+        try:
+            db.session.commit()
+            creados += 1
+        except Exception:
+            db.session.rollback()
+            errores.append(f'Línea {idx}: error al crear usuario "{nombre}"')
+    return jsonify({'creados': creados, 'errores': errores}), 201
