@@ -80,13 +80,15 @@ def delete_asistencia(id_usuario, id_evento):
     return '', 204
 
 
-
-# En routes/asistencias.py
-
+# Reporte de asistencias por fecha
 @asistencias_bp.route('/reporte-por-fecha')
 def reporte_por_fecha():
-    # Obtener todas las fechas únicas (ordenadas)
-    fechas = db.session.query(Evento.fecha).order_by(Evento.fecha).all()
+    # Obtener solo las fechas que tienen al menos un registro de asistencia
+    fechas = db.session.query(Evento.fecha)\
+        .join(Asistencia, Evento.id_evento == Asistencia.id_evento)\
+        .distinct()\
+        .order_by(Evento.fecha)\
+        .all()
     fechas_list = [f.fecha.isoformat() for f in fechas]
 
     # Obtener todos los usuarios
@@ -105,7 +107,7 @@ def reporte_por_fecha():
         # Crear un diccionario fecha -> estado
         asist_dict = {fecha.isoformat(): estado for _, fecha, estado in asistencias}
         
-        # Rellenar con "No convocado" si no hay registro
+        # Rellenar con "No convocado" si no hay registro para esa fecha
         fila = {
             'nombre': usuario.nombre,
             'instrumento': usuario.instrumento,
