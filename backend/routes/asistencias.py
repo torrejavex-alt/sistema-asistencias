@@ -119,3 +119,35 @@ def reporte_por_fecha():
         'fechas': fechas_list,
         'registros': reporte
     })
+
+
+# DELETE all asistencias
+@asistencias_bp.route('/delete-all', methods=['DELETE'])
+def delete_all_asistencias():
+    try:
+        num_deleted = db.session.query(Asistencia).delete()
+        db.session.commit()
+        return jsonify({
+            'message': f'Se eliminaron {num_deleted} registros de asistencia',
+            'deleted_count': num_deleted
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Error al eliminar registros: {str(e)}'}), 500
+
+
+# DELETE asistencias by user
+@asistencias_bp.route('/delete-by-user/<int:id_usuario>', methods=['DELETE'])
+def delete_asistencias_by_user(id_usuario):
+    try:
+        num_deleted = db.session.query(Asistencia)\
+            .filter(Asistencia.id_usuario == id_usuario)\
+            .delete()
+        db.session.commit()
+        return jsonify({
+            'message': f'Se eliminaron {num_deleted} registros de asistencia del usuario',
+            'deleted_count': num_deleted
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Error al eliminar registros: {str(e)}'}), 500

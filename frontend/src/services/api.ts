@@ -107,3 +107,13 @@ export const fetchReportePorFecha = async () => {
     const response = await api.get('/asistencias/reporte-por-fecha');
     return response.data;
 };
+
+export const deleteAllAsistencias = async () => {
+    const response = await api.delete('/asistencias/delete-all');
+    return response.data;
+};
+
+export const deleteAsistenciasByUser = async (userId: number) => {
+    const response = await api.delete(`/asistencias/delete-by-user/${userId}`);
+    return response.data;
+};
