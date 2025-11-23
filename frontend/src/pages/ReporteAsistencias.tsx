@@ -28,7 +28,7 @@ export function ReporteAsistencias() {
             setFechas(data.fechas);
             setRegistros(data.registros);
             const years = Array.from(
-                new Set((data.fechas as string[]).map((f: string) => new Date(f).getFullYear().toString()))
+                new Set((data.fechas as string[]).map((f: string) => new Date(f + 'T12:00:00').getFullYear().toString()))
             );
             setAvailableYears(years);
             setSelectedYear(years[0] || '');
@@ -40,7 +40,7 @@ export function ReporteAsistencias() {
         if (!selectedYear) return fechas;
 
         return fechas.filter(f => {
-            const date = new Date(f);
+            const date = new Date(f + 'T12:00:00');
             const year = date.getFullYear().toString();
             const month = date.getMonth();
             const quarter = Math.floor(month / 3) + 1;
@@ -80,7 +80,7 @@ export function ReporteAsistencias() {
         let currentMonth = '';
         let count = 0;
         filteredFechas.forEach(fecha => {
-            const date = new Date(fecha);
+            const date = new Date(fecha + 'T12:00:00');
             const monthName = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
             const formattedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
             if (formattedMonth !== currentMonth) {
@@ -128,12 +128,12 @@ export function ReporteAsistencias() {
         const exportData = filteredRegistros.map(registro => {
             const row: any = { Usuario: registro.nombre };
             filteredFechas.forEach(fecha => {
-                const formattedDate = new Date(fecha).toLocaleDateString('es-ES');
+                const formattedDate = new Date(fecha + 'T12:00:00').toLocaleDateString('es-ES');
                 row[formattedDate] = registro[fecha] || 'Sin registrar';
             });
             return row;
         });
-        const headers = ['Usuario', ...filteredFechas.map(f => new Date(f).toLocaleDateString('es-ES'))];
+        const headers = ['Usuario', ...filteredFechas.map(f => new Date(f + 'T12:00:00').toLocaleDateString('es-ES'))];
         exportToCSV(exportData, `reporte-asistencias-${new Date().toISOString().split('T')[0]}`, headers);
     };
 
@@ -286,7 +286,7 @@ export function ReporteAsistencias() {
                                         key={fecha}
                                         className="border-b-2 border-slate-300 p-2 text-center w-10 bg-slate-50 text-slate-600 font-semibold"
                                     >
-                                        {new Date(fecha).getDate()}
+                                        {new Date(fecha + 'T12:00:00').getDate()}
                                     </th>
                                 ))}
                             </tr>
