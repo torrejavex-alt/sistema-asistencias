@@ -3,6 +3,10 @@
 .env
 backend/.env
 
+# Documentation (sensitive files)
+*.md
+!README.md
+!frontend/README.md
 
 # Python / Backend
 backend/__pycache__/
