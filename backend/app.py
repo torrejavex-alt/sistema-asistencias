@@ -44,24 +44,25 @@ def create_app():
     app.register_blueprint(asistencias_bp, url_prefix='/api/asistencias')
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
-    # Crear tablas si no existen (Solución para error 500 por falta de tablas)
+    # Crear tablas si no existen y actualizar esquema
     with app.app_context():
-        import models  # Importar modelos para que SQLAlchemy los reconozca
+        import models
         db.create_all()
-
-    # Temporary route to fix DB schema (add missing columns)
-    @app.route('/api/fix-db')
-    def fix_db():
+        
+        # Auto-migración: Asegurar que existan las nuevas columnas
+        # Esto se ejecuta cada vez que inicia la app para "reparar" la BD automáticamente
         from sqlalchemy import text
         try:
             with db.engine.connect() as conn:
+                # Intentamos agregar las columnas. Si ya existen, Postgres con IF NOT EXISTS no falla.
                 conn.execute(text("ALTER TABLE usuario ADD COLUMN IF NOT EXISTS email VARCHAR(120);"))
                 conn.execute(text("ALTER TABLE usuario ADD COLUMN IF NOT EXISTS telefono VARCHAR(30);"))
                 conn.execute(text("ALTER TABLE usuario ADD COLUMN IF NOT EXISTS instrumento VARCHAR(100);"))
                 conn.commit()
-            return "Database schema updated successfully! (Added email, telefono, instrumento)"
+            print("✓ Esquema de base de datos actualizado correctamente.")
         except Exception as e:
-            return f"Error updating schema: {str(e)}"
+            # Si falla (ej. base de datos no soporta IF NOT EXISTS o error de conexión), lo logueamos pero no detenemos la app
+            print(f"⚠ Advertencia al actualizar esquema: {e}")
 
     return app
 
