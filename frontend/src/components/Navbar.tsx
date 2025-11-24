@@ -26,7 +26,8 @@ export default function Navbar() {
         { path: '/', label: 'Dashboard' },
         { path: '/reportes', label: 'Reporte Asistencias' },
         { path: '/analiticas', label: 'Analíticas' },
-        { path: '/usuarios', label: 'Usuarios' }
+        { path: '/usuarios', label: 'Usuarios' },
+        { path: '/bulk-import', label: 'Carga Masiva' }
     ];
 
     return (
