@@ -49,6 +49,20 @@ def create_app():
         import models  # Importar modelos para que SQLAlchemy los reconozca
         db.create_all()
 
+    # Temporary route to fix DB schema (add missing columns)
+    @app.route('/api/fix-db')
+    def fix_db():
+        from sqlalchemy import text
+        try:
+            with db.engine.connect() as conn:
+                conn.execute(text("ALTER TABLE usuario ADD COLUMN IF NOT EXISTS email VARCHAR(120);"))
+                conn.execute(text("ALTER TABLE usuario ADD COLUMN IF NOT EXISTS telefono VARCHAR(30);"))
+                conn.execute(text("ALTER TABLE usuario ADD COLUMN IF NOT EXISTS instrumento VARCHAR(100);"))
+                conn.commit()
+            return "Database schema updated successfully! (Added email, telefono, instrumento)"
+        except Exception as e:
+            return f"Error updating schema: {str(e)}"
+
     return app
 
 if __name__ == '__main__':
