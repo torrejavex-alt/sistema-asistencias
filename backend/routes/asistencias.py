@@ -259,7 +259,7 @@ def import_asistencias():
         estado_desc = row.get('estado', '').strip()
         
         if not fecha_str or not nombre_usuario or not estado_desc:
-            errores.append(f'Línea {idx}: datos incompletos')
+            errores.append(f'Línea {idx}: datos incompletos - Fecha: "{fecha_str}", Usuario: "{nombre_usuario}", Estado: "{estado_desc}"')
             continue
             
         # Parse date
@@ -270,29 +270,30 @@ def import_asistencias():
             try:
                 fecha_obj = datetime.strptime(fecha_str, '%d/%m/%Y').date()
             except ValueError:
-                errores.append(f'Línea {idx}: fecha inválida "{fecha_str}"')
+                errores.append(f'Línea {idx}: fecha inválida "{fecha_str}" (Usuario: {nombre_usuario}, Estado: {estado_desc})')
                 continue
         
         fecha_iso = fecha_obj.isoformat()
         
         id_evento = eventos_map.get(fecha_iso)
         if not id_evento:
-             errores.append(f'Línea {idx}: evento no encontrado (error interno)')
+             errores.append(f'Línea {idx}: evento no encontrado (error interno) - Fecha: {fecha_str}, Usuario: {nombre_usuario}')
              continue
              
         id_usuario = usuarios_map.get(nombre_usuario)
         if not id_usuario:
-            errores.append(f'Línea {idx}: usuario "{nombre_usuario}" no encontrado')
+            errores.append(f'Línea {idx}: usuario "{nombre_usuario}" no encontrado - Fecha: {fecha_str}, Estado: {estado_desc}')
             continue
             
         id_tipo = tipos_map.get(estado_desc)
         if not id_tipo:
-            errores.append(f'Línea {idx}: estado "{estado_desc}" no válido')
+            estados_validos = ', '.join(f'"{e}"' for e in tipos_map.keys())
+            errores.append(f'Línea {idx}: estado "{estado_desc}" no válido - Usuario: {nombre_usuario}, Fecha: {fecha_str}. Estados válidos: {estados_validos}')
             continue
             
         key = (id_usuario, id_evento)
         if key in batch_keys:
-            errores.append(f'Línea {idx}: registro duplicado en el archivo')
+            errores.append(f'Línea {idx}: registro duplicado - Usuario: {nombre_usuario}, Fecha: {fecha_str}')
             continue
             
         batch_keys.add(key)
