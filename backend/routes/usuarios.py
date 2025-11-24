@@ -7,12 +7,16 @@ usuarios_bp = Blueprint('usuarios', __name__)
 # GET /api/usuarios
 @usuarios_bp.route('', methods=['GET'])
 def get_usuarios():
-    usuarios = Usuario.query.all()
-    return jsonify([{
-        'id_usuario': u.id_usuario,
-        'nombre': u.nombre,
-        'instrumento': u.instrumento
-    } for u in usuarios])
+    try:
+        usuarios = Usuario.query.all()
+        return jsonify([{
+            'id_usuario': u.id_usuario,
+            'nombre': u.nombre,
+            'instrumento': u.instrumento
+        } for u in usuarios])
+    except Exception as e:
+        print(f"Error getting usuarios: {e}")
+        return jsonify({'error': str(e)}), 500
 
 # POST /api/usuarios
 @usuarios_bp.route('', methods=['POST'])
