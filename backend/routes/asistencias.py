@@ -4,7 +4,7 @@ from extensions import db
 from datetime import datetime
 import csv
 
-asistencias_bp = Blueprint('asistencias', __name__')
+asistencias_bp = Blueprint('asistencias', __name__)
 
 # GET /api/asistencias
 @asistencias_bp.route('', methods=['GET'])
