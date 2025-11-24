@@ -15,9 +15,7 @@ api.interceptors.request.use(
         }
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
 // Interceptor para manejar errores de autenticación
@@ -88,6 +86,11 @@ export const fetchAsistencias = async () => {
     return response.data;
 };
 
+export const fetchReportePorFecha = async () => {
+    const response = await api.get('/asistencias/reporte-por-fecha');
+    return response.data;
+};
+
 export const createAsistencia = async (data: { id_usuario: number; id_evento: number; id_tipo: number }) => {
     const response = await api.post('/asistencias', data);
     return response.data;
@@ -98,13 +101,9 @@ export const updateAsistencia = async (userId: number, eventId: number, tipoId: 
     return response.data;
 };
 
+// Delete a specific asistencia for a user and event
 export const deleteAsistencia = async (userId: number, eventId: number) => {
     const response = await api.delete(`/asistencias/${userId}/${eventId}`);
-    return response.data;
-};
-
-export const fetchReportePorFecha = async () => {
-    const response = await api.get('/asistencias/reporte-por-fecha');
     return response.data;
 };
 
@@ -113,7 +112,22 @@ export const deleteAllAsistencias = async () => {
     return response.data;
 };
 
-export const deleteAsistenciasByUser = async (userId: number) => {
-    const response = await api.delete(`/asistencias/delete-by-user/${userId}`);
+// Importar usuarios (CSV)
+export const importUsuarios = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post('/usuarios/import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+};
+
+// Importar asistencias (CSV)
+export const importAsistencias = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post('/asistencias/import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
 };

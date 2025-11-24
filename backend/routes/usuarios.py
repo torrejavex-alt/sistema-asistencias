@@ -95,28 +95,42 @@ def import_usuarios():
     stream = file.stream.read().decode('utf-8').splitlines()
     import csv
     reader = csv.DictReader(stream)
+    
+    # Pre-fetch existing names for faster validation
+    # We use a set for O(1) lookups
+    existing_names = set(u.nombre for u in Usuario.query.with_entities(Usuario.nombre).all())
+    
     creados = 0
     errores = []
+    nuevos_usuarios = []
+    
     for idx, row in enumerate(reader, start=2):  # start=2 accounting header line
         nombre = row.get('nombre')
         if not nombre:
             errores.append(f'Línea {idx}: nombre vacío')
             continue
-        # Verificar duplicado
-        if Usuario.query.filter_by(nombre=nombre).first():
+            
+        # Verificar duplicado (en DB o en el lote actual)
+        if nombre in existing_names:
             errores.append(f'Línea {idx}: usuario "{nombre}" ya existe')
             continue
+            
         nuevo = Usuario(
             nombre=nombre,
             instrumento=row.get('instrumento') or None,
             email=row.get('email') or None,
             telefono=row.get('telefono') or None,
         )
-        db.session.add(nuevo)
+        nuevos_usuarios.append(nuevo)
+        existing_names.add(nombre) # Add to set to prevent duplicates within the file
+        creados += 1
+        
+    if nuevos_usuarios:
         try:
+            db.session.bulk_save_objects(nuevos_usuarios)
             db.session.commit()
-            creados += 1
-        except Exception:
+        except Exception as e:
             db.session.rollback()
-            errores.append(f'Línea {idx}: error al crear usuario "{nombre}"')
+            return jsonify({'error': 'Error al guardar usuarios', 'details': str(e)}), 500
+            
     return jsonify({'creados': creados, 'errores': errores}), 201

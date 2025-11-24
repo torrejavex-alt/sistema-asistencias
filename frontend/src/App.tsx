@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/dashboard';
 import { ReporteAsistencias } from './pages/ReporteAsistencias';
+import BulkImport from './pages/BulkImport';
 import Analiticas from './pages/Analiticas';
 import Usuarios from './pages/Usuarios';
 import Login from './pages/Login';
@@ -28,6 +29,7 @@ function App() {
                     <Route path="/reportes" element={<ReporteAsistencias />} />
                     <Route path="/analiticas" element={<Analiticas />} />
                     <Route path="/usuarios" element={<Usuarios />} />
+                    <Route path="/bulk-import" element={<BulkImport />} />
                   </Routes>
                 </div>
               </div>
