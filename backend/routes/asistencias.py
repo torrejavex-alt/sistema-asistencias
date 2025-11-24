@@ -298,11 +298,26 @@ def import_asistencias():
         if not id_usuario:
             errores.append(f'Línea {idx}: usuario "{nombre_usuario}" no encontrado - Fecha: {fecha_str}, Estado: {estado_desc}')
             continue
+        
+        # Map common variations to database values
+        estado_mappings = {
+            'falta': 'No asistió',
+            'permiso': 'Con permiso',
+            'asistió': 'Asistió',
+            'asistio': 'Asistió',
+            'no convocado': 'No convocado',
+            'no asistió': 'No asistió',
+            'no asistio': 'No asistió',
+            'con permiso': 'Con permiso'
+        }
+        
+        # Normalize the estado_desc
+        estado_normalized = estado_mappings.get(estado_desc.lower().strip(), estado_desc)
             
         # Try exact match first, then case-insensitive
-        id_tipo = tipos_map.get(estado_desc)
+        id_tipo = tipos_map.get(estado_normalized)
         if not id_tipo:
-            id_tipo = tipos_map_lower.get(estado_desc.lower().strip())
+            id_tipo = tipos_map_lower.get(estado_normalized.lower().strip())
         
         if not id_tipo:
             estados_validos = ', '.join(f'"{e}"' for e in sorted(tipos_map.keys()))
