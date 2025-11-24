@@ -44,6 +44,11 @@ def create_app():
     app.register_blueprint(asistencias_bp, url_prefix='/api/asistencias')
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
+    # Crear tablas si no existen (Solución para error 500 por falta de tablas)
+    with app.app_context():
+        import models  # Importar modelos para que SQLAlchemy los reconozca
+        db.create_all()
+
     return app
 
 if __name__ == '__main__':
