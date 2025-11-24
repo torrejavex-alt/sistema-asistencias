@@ -107,6 +107,13 @@ export const deleteAsistencia = async (userId: number, eventId: number) => {
     return response.data;
 };
 
+// Delete all asistencias for a specific user
+export const deleteAsistenciasByUser = async (userId: number) => {
+    const response = await api.delete(`/asistencias/delete-by-user/${userId}`);
+    return response.data;
+};
+
+// Delete ALL asistencias
 export const deleteAllAsistencias = async () => {
     const response = await api.delete('/asistencias/delete-all');
     return response.data;
