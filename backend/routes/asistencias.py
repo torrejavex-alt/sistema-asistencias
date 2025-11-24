@@ -154,6 +154,15 @@ def delete_asistencias_by_user(id_usuario):
         db.session.rollback()
         return jsonify({'error': f'Error al eliminar registros: {str(e)}'}), 500
 
+# GET /api/asistencias/tipos - Get valid attendance types
+@asistencias_bp.route('/tipos', methods=['GET'])
+def get_tipos_asistencia():
+    tipos = TipoAsistencia.query.all()
+    return jsonify([{
+        'id_tipo': t.id_tipo,
+        'descripcion': t.descripcion
+    } for t in tipos])
+
 # POST /api/asistencias/import (CSV bulk upload)
 @asistencias_bp.route('/import', methods=['POST'])
 def import_asistencias():
@@ -287,7 +296,7 @@ def import_asistencias():
             
         id_tipo = tipos_map.get(estado_desc)
         if not id_tipo:
-            estados_validos = ', '.join(f'"{e}"' for e in tipos_map.keys())
+            estados_validos = ', '.join(f'"{e}"' for e in sorted(tipos_map.keys()))
             errores.append(f'Línea {idx}: estado "{estado_desc}" no válido - Usuario: {nombre_usuario}, Fecha: {fecha_str}. Estados válidos: {estados_validos}')
             continue
             
