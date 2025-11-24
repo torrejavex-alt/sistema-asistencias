@@ -218,7 +218,12 @@ def import_asistencias():
 
     # 1. Caches
     usuarios_map = {u.nombre: u.id_usuario for u in Usuario.query.with_entities(Usuario.nombre, Usuario.id_usuario).all()}
-    tipos_map = {t.descripcion: t.id_tipo for t in TipoAsistencia.query.with_entities(TipoAsistencia.descripcion, TipoAsistencia.id_tipo).all()}
+    
+    # Create both exact and case-insensitive maps for tipos
+    tipos_list = TipoAsistencia.query.with_entities(TipoAsistencia.descripcion, TipoAsistencia.id_tipo).all()
+    tipos_map = {t.descripcion: t.id_tipo for t in tipos_list}
+    tipos_map_lower = {t.descripcion.lower().strip(): t.id_tipo for t in tipos_list}
+    
     eventos_map = {e.fecha.isoformat(): e.id_evento for e in Evento.query.with_entities(Evento.fecha, Evento.id_evento).all()}
     
     # 2. Identify and create new events
@@ -294,7 +299,11 @@ def import_asistencias():
             errores.append(f'Línea {idx}: usuario "{nombre_usuario}" no encontrado - Fecha: {fecha_str}, Estado: {estado_desc}')
             continue
             
+        # Try exact match first, then case-insensitive
         id_tipo = tipos_map.get(estado_desc)
+        if not id_tipo:
+            id_tipo = tipos_map_lower.get(estado_desc.lower().strip())
+        
         if not id_tipo:
             estados_validos = ', '.join(f'"{e}"' for e in sorted(tipos_map.keys()))
             errores.append(f'Línea {idx}: estado "{estado_desc}" no válido - Usuario: {nombre_usuario}, Fecha: {fecha_str}. Estados válidos: {estados_validos}')
